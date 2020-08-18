@@ -15,7 +15,3 @@ For deployment, use deployment service or follow instruction in each project.
 For running locally, follow the steps inside each project
 
 install node, npm, set up serverless
-
-Have also added a flask setup for easier development & debugging. 
-Add pointer to your function from main.py and call the url
-start the flask server with
