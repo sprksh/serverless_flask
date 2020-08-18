@@ -1,0 +1,10 @@
+-r requirements.txt
+
+pre-commit
+black
+
+ipython
+flask-shell-ipython
+ipdb
+
+pytest

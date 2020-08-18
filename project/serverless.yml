@@ -1,0 +1,66 @@
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+  - serverless-offline
+
+custom:
+  wsgi:
+    app: wsgi.application
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: true
+
+  stages:
+    - dev
+    - staging
+    - prod
+
+package:
+  include:
+    - application/**
+    - wsgi
+    - autoapp
+    - migrations/**
+
+  exclude:
+    - test/**
+    - .serverless
+    - .idea
+    - node_modules
+
+service: serverless-flask-project
+
+provider:
+  name: aws
+  runtime: python3.7
+#  versionFunctions: false
+  stage: ${opt:stage, 'dev'}
+  role: '' #accesss/role that your lambda needs
+  timeout: ${file(deployment-configs/${self:provider.stage}.yaml):timeout}
+  memorySize: ${file(deployment-configs/${self:provider.stage}.yaml):memorySize}
+  region: ${file(deployment-configs/${self:provider.stage}.yaml):region}
+  vpc:
+    securityGroupIds:
+      - ${file(deployment-configs/${self:provider.stage}.yaml):securityGroup}
+    subnetIds:
+      - ${file(deployment-configs/${self:provider.stage}.yaml):subnetId1}
+      - ${file(deployment-configs/${self:provider.stage}.yaml):subnetId1}
+  environment:
+    APP_ENV: ${opt:stage, 'dev'}
+
+#    LOGSTASH_HOST: ${ssm:/utils/${self:provider.stage}/logstash_host~true}
+#    LOGSTASH_PORT: ${ssm:/utils/${self:provider.stage}/logstash_port~true}
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    timeout: 100
+    events:
+#      - http: ANY /
+#      - http: 'ANY {proxy+}'
+      - alb:
+          listenerArn: ${file(deployment-configs/${self:provider.stage}.yaml):alb}
+          priority: 79
+          conditions:
+            host: ${file(deployment-configs/${self:provider.stage}.yaml):host}
+            path: /project/*
