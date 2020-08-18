@@ -1,0 +1,9 @@
+memorySize: 256
+timeout: 6
+region: ''
+logRetentionInDays: 5
+subnetId1: ''
+subnetId2: ''
+alb: ''
+host: ''
+securityGroup: ''

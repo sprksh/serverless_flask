@@ -17,7 +17,6 @@ tasks
 
 *.xls*
 *.csv
-*.yaml
 *.pickle
 *.pdf
 *.log
